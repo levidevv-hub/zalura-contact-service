@@ -1,0 +1,13 @@
+server:
+  port: ${PORT:8082}
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5433/contacts}
+    username: ${DB_USER:contacts}
+    password: ${DB_PASSWORD:contacts}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true

@@ -1,0 +1,17 @@
+services:
+  db:
+    image: postgres:17-alpine
+    ports:
+      - "127.0.0.1:5433:5432"
+    environment:
+      POSTGRES_DB: contacts
+      POSTGRES_USER: contacts
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-contacts}
+    volumes:
+      - contact_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U contacts -d contacts"]
+      interval: 5s
+      retries: 10
+volumes:
+  contact_pgdata:

@@ -19,37 +19,36 @@ public class ContactController {
         this.service = service;
     }
 
-    // TODO SECURITY: X-Company-Id must ONLY be injected by an authenticated trusted gateway.
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Response create(@RequestHeader("X-Company-Id") UUID company, @Valid @RequestBody Request request) {
+    public Response create(@RequestAttribute("authenticatedCompanyId") UUID company, @Valid @RequestBody Request request) {
         return service.create(company, request);
     }
 
     @GetMapping
-    public Page<Response> list(@RequestHeader("X-Company-Id") UUID company, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
+    public Page<Response> list(@RequestAttribute("authenticatedCompanyId") UUID company, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
         if (page < 0 || size < 1 || size > 100)
             throw new org.springframework.web.server.ResponseStatusException(HttpStatus.BAD_REQUEST, "Paginação inválida");
         return service.list(company, PageRequest.of(page, size));
     }
 
     @GetMapping("/{id}")
-    public Response get(@RequestHeader("X-Company-Id") UUID company, @PathVariable UUID id) {
+    public Response get(@RequestAttribute("authenticatedCompanyId") UUID company, @PathVariable UUID id) {
         return service.get(company, id);
     }
 
     @PutMapping("/{id}")
-    public Response update(@RequestHeader("X-Company-Id") UUID company, @PathVariable UUID id, @Valid @RequestBody Update request) {
+    public Response update(@RequestAttribute("authenticatedCompanyId") UUID company, @PathVariable UUID id, @Valid @RequestBody Update request) {
         return service.update(company, id, request);
     }
 
     @PatchMapping("/{id}/consent")
-    public Response consent(@RequestHeader("X-Company-Id") UUID company, @PathVariable UUID id, @RequestBody ConsentRequest input) {
+    public Response consent(@RequestAttribute("authenticatedCompanyId") UUID company, @PathVariable UUID id, @RequestBody ConsentRequest input) {
         return service.consent(company, id, input.consent());
     }
 
     @PatchMapping("/{id}/block")
-    public Response block(@RequestHeader("X-Company-Id") UUID company, @PathVariable UUID id, @RequestBody BlockRequest input) {
+    public Response block(@RequestAttribute("authenticatedCompanyId") UUID company, @PathVariable UUID id, @RequestBody BlockRequest input) {
         return service.block(company, id, input.blocked());
     }
 
@@ -58,12 +57,13 @@ public class ContactController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@RequestHeader("X-Company-Id") UUID company, @PathVariable UUID id) {
+    public void delete(@RequestAttribute("authenticatedCompanyId") UUID company, @PathVariable UUID id) {
         service.delete(company, id);
     }
 
     @PostMapping("/import")
-    public BatchResult importContacts(@RequestHeader("X-Company-Id") UUID company, @Valid @RequestBody Batch input) {
+    public BatchResult importContacts(@RequestAttribute("authenticatedCompanyId") UUID company, @Valid @RequestBody Batch input) {
         return service.importBatch(company, input);
     }
 }
+

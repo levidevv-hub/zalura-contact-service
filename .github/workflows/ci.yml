@@ -5,6 +5,21 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: contacts
+          POSTGRES_USER: contacts
+          POSTGRES_PASSWORD: test-only-password
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U contacts -d contacts"
+          --health-interval 10s --health-timeout 5s --health-retries 5
+    env:
+      DB_URL: jdbc:postgresql://localhost:5432/contacts
+      DB_USER: contacts
+      DB_PASSWORD: test-only-password
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -14,4 +29,5 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.14'
-      - run: gradle test --no-daemon
+      - run: gradle clean build --no-daemon
+
